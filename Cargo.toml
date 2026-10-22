@@ -1,0 +1,38 @@
+[package]
+name = "flat-snowluma-mcp"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Typed per-action MCP tools for a SnowLuma OneBot v11 instance."
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "flat-snowluma-mcp"
+path = "src/main.rs"
+
+[dependencies]
+rmcp = { version = "3.5.1", default-features = false, features = ["server", "transport-io"] }
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "io-std", "io-util", "time", "sync", "fs", "signal"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "stream", "rustls", "charset", "http2"] }
+snafu = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+futures-util = "0.3"
+bytes = "1"
+base64 = "0.23"
+sha2 = "0.11"
+uuid = { version = "1.28", features = ["v4"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[dev-dependencies]
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "test-util"] }
+
+[profile.release]
+strip = true
+lto = "thin"
