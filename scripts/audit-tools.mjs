@@ -155,13 +155,17 @@ export function audit(catalog, actual) {
     const prefix = `assets/catalog.json#/actions/${index}`;
     const expected = structuredClone(action.inputSchema);
     if (name === "upload_file_stream") {
-      expected.properties.execution = catalog.execution.inputSchema.properties.execution;
+      expected.properties.execution = structuredClone(catalog.execution.inputSchema.properties.execution);
       const required = (expected.required ?? []).filter((field) => field !== "stream_id");
       if (required.length) expected.required = required; else delete expected.required;
-      expected.anyOf = [
-        { required: ["stream_id"] },
-        { required: ["execution"], properties: { execution: { required: ["input_file"] } } },
-      ];
+      // Repeat the official fields in each branch for clients that render unions
+      // independently. Descriptions and field schemas still match the snapshot.
+      const manual = structuredClone(expected);
+      manual.required = ["stream_id"];
+      const automatic = structuredClone(expected);
+      automatic.required = ["execution"];
+      automatic.properties.execution.required = ["input_file"];
+      expected.anyOf = [manual, automatic];
     }
     assert.deepEqual(tool.inputSchema, expected, `${name}: action/execution inputSchema differs`);
     assert.equal(tool.annotations?.readOnlyHint, action.readOnly, `${name}: readOnly differs`);

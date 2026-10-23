@@ -184,10 +184,14 @@ pub fn tool_input_schema(catalog: &Catalog, action: &ActionDoc) -> Value {
         } else {
             input["required"] = json!(remaining);
         }
-        input["anyOf"] = json!([
-            {"required": ["stream_id"]},
-            {"required": ["execution"], "properties": {"execution": {"required": ["input_file"]}}}
-        ]);
+        // Codemode renders union branches independently of their parent. Repeat
+        // the complete properties so both valid modes retain discoverable types.
+        let mut manual = input.clone();
+        manual["required"] = json!(["stream_id"]);
+        let mut automatic = input.clone();
+        automatic["required"] = json!(["execution"]);
+        automatic["properties"]["execution"]["required"] = json!(["input_file"]);
+        input["anyOf"] = json!([manual, automatic]);
     }
     input
 }
@@ -389,7 +393,22 @@ mod tests {
             for (name, field) in original["properties"].as_object().unwrap() {
                 assert_eq!(tool.input_schema["properties"][name], *field);
             }
-            assert!(tool.input_schema.contains_key("anyOf"));
+            let branches = tool.input_schema["anyOf"].as_array().unwrap();
+            assert_eq!(branches.len(), 2);
+            for branch in branches {
+                assert_eq!(
+                    branch["properties"]["execution"]["properties"]["input_file"]["type"],
+                    "string"
+                );
+                for (name, field) in original["properties"].as_object().unwrap() {
+                    assert_eq!(branch["properties"][name], *field);
+                }
+            }
+            assert_eq!(branches[0]["required"], json!(["stream_id"]));
+            assert_eq!(
+                branches[1]["properties"]["execution"]["required"],
+                json!(["input_file"])
+            );
         }
     }
 

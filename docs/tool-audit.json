@@ -16597,21 +16597,147 @@
           "additionalProperties": true,
           "anyOf": [
             {
+              "additionalProperties": true,
+              "properties": {
+                "chunk_data": {
+                  "description": "分块数据(Base64)",
+                  "type": "string"
+                },
+                "chunk_index": {
+                  "description": "分块索引(从 0 开始)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "execution": {
+                  "additionalProperties": false,
+                  "description": "MCP 主机侧执行选项（不会发送为 OneBot params）。自动上传本地文件时使用。",
+                  "properties": {
+                    "input_file": {
+                      "description": "MCP 主机上的文件路径。仅用于 upload_file_stream，且必须位于 SNOWLUMA_MCP_UPLOAD_ROOT。",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "expected_sha256": {
+                  "description": "期望的整文件 SHA256(校验)",
+                  "type": "string"
+                },
+                "file_retention": {
+                  "default": 300000,
+                  "description": "合并文件保留毫秒(0=不回收)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "file_size": {
+                  "description": "文件总大小(字节)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "filename": {
+                  "description": "文件名",
+                  "type": "string"
+                },
+                "is_complete": {
+                  "description": "是否为最后一个分块/触发合并",
+                  "type": "boolean"
+                },
+                "reset": {
+                  "description": "重置并丢弃该流",
+                  "type": "boolean"
+                },
+                "stream_id": {
+                  "description": "流 ID(客户端生成的 UUID,限 [A-Za-z0-9_-])",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "total_chunks": {
+                  "description": "总分块数(新流必填)",
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "verify_only": {
+                  "description": "仅查询当前流状态",
+                  "type": "boolean"
+                }
+              },
               "required": [
                 "stream_id"
-              ]
+              ],
+              "type": "object"
             },
             {
+              "additionalProperties": true,
               "properties": {
+                "chunk_data": {
+                  "description": "分块数据(Base64)",
+                  "type": "string"
+                },
+                "chunk_index": {
+                  "description": "分块索引(从 0 开始)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
                 "execution": {
+                  "additionalProperties": false,
+                  "description": "MCP 主机侧执行选项（不会发送为 OneBot params）。自动上传本地文件时使用。",
+                  "properties": {
+                    "input_file": {
+                      "description": "MCP 主机上的文件路径。仅用于 upload_file_stream，且必须位于 SNOWLUMA_MCP_UPLOAD_ROOT。",
+                      "type": "string"
+                    }
+                  },
                   "required": [
                     "input_file"
-                  ]
+                  ],
+                  "type": "object"
+                },
+                "expected_sha256": {
+                  "description": "期望的整文件 SHA256(校验)",
+                  "type": "string"
+                },
+                "file_retention": {
+                  "default": 300000,
+                  "description": "合并文件保留毫秒(0=不回收)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "file_size": {
+                  "description": "文件总大小(字节)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "filename": {
+                  "description": "文件名",
+                  "type": "string"
+                },
+                "is_complete": {
+                  "description": "是否为最后一个分块/触发合并",
+                  "type": "boolean"
+                },
+                "reset": {
+                  "description": "重置并丢弃该流",
+                  "type": "boolean"
+                },
+                "stream_id": {
+                  "description": "流 ID(客户端生成的 UUID,限 [A-Za-z0-9_-])",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "total_chunks": {
+                  "description": "总分块数(新流必填)",
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "verify_only": {
+                  "description": "仅查询当前流状态",
+                  "type": "boolean"
                 }
               },
               "required": [
                 "execution"
-              ]
+              ],
+              "type": "object"
             }
           ],
           "properties": {
